@@ -16,7 +16,7 @@ struct ContentView: View {
         HStack {
             TextField("Enter in a new task", text: self.$newToDo)
             Button(action: self.addNewToDo) {
-                Text("Add New Itemshgfhjgfjhgc")
+                Image(systemName: "plus")
             }
         }
     }
@@ -53,8 +53,6 @@ struct ContentView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
 }
