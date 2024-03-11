@@ -16,7 +16,7 @@ struct ContentView: View {
         HStack {
             TextField("Enter in a new task", text: self.$newToDo)
             Button(action: self.addNewToDo) {
-                Text("Add New Items")
+                Text("Add New Itemshgfhjgfjhgc")
             }
         }
     }
