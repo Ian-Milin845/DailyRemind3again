@@ -2,7 +2,7 @@
 //  DailyRemind3App.swift
 //  DailyRemind3
 //
-//  Created by Ian Milin on 3/10/24.
+//  Created by Ian Milin
 //
 
 import SwiftUI

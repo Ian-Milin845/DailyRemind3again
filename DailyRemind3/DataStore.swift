@@ -2,7 +2,11 @@
 //  DataStore.swift
 //  DailyRemind3
 //
-//  Created by Ian Milin on 3/10/24.
+//  Created by:
+//  Ian Milin
+//  Veronica Miranda
+//  Jaqueline Martinez
+//  Jayden Hixon
 //
 
 import Foundation

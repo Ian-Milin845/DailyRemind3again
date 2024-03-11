@@ -2,7 +2,11 @@
 //  ContentView.swift
 //  DailyRemind3
 //
-//  Created by Ian Milin on 3/10/24.
+//  Created by:
+//  Ian Milin
+//  Veronica Miranda
+//  Jaqueline Martinez
+//  Jayden Hixon
 //
 
 import SwiftUI
@@ -11,11 +15,17 @@ import Combine
 struct ContentView: View {
     @ObservedObject var taskStore = TaskStore()
     @State var newToDo : String = ""
+    @State var showingNewItemView = false
+    
     
     var searchBar : some View {
         HStack {
             TextField("Enter in a new task", text: self.$newToDo)
-            Button(action: self.addNewToDo) {
+            Button {
+                // Action
+                // self.addNewToDo()
+                showingNewItemView = true
+            } label: {
                 Image(systemName: "plus")
             }
         }
@@ -41,6 +51,9 @@ struct ContentView: View {
                 }
                 .navigationBarTitle("Tasks")
                 .navigationBarItems(trailing: EditButton())
+            }
+            .sheet(isPresented: $showingNewItemView) {
+                NewItemView(newItemPresented: $showingNewItemView)
             }
         }
     }
