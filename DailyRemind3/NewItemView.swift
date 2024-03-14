@@ -12,7 +12,7 @@
 import SwiftUI
 
 struct NewItemView: View {
-    @StateObject var viewModel = NewItemViewViewModel()
+    @StateObject var viewModel = TaskStore()
     @Binding var newItemPresented: Bool
     
     var body: some View {
@@ -37,7 +37,7 @@ struct NewItemView: View {
                     background: .pink
                 ) {
                     if viewModel.canSave {
-                        viewModel.save()
+                        viewModel.save(/*viewModel.title, viewModel.dueDate*/)
                         newItemPresented = false
                     } else {
                         viewModel.showAlert = true

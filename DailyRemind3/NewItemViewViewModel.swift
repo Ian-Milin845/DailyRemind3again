@@ -24,6 +24,7 @@ class NewItemViewViewModel: ObservableObject {
         }
         
         // Create model
+        /*
         let newId = UUID().uuidString
         let newItem = ToDoListItem(
             id: newId,
@@ -31,7 +32,9 @@ class NewItemViewViewModel: ObservableObject {
             dueDate: dueDate.timeIntervalSince1970,
             createdDate: Date().timeIntervalSince1970,
             isDone: false
-        )
+        )*/
+        
+        // TaskStore.tasks[TaskStore.tasks.count - 1].dueDate = dueDate.timeIntervalSince1970;
         
         // Save model
         

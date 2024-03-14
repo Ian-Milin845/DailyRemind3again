@@ -13,14 +13,44 @@ import Foundation
 import SwiftUI
 import Combine
 
-struct Task : Identifiable {
-    var id = String()
-    var toDoItem = String()
-    
-    //Add more complicated stuff later if you want
-    
-}
+/*
+let newItem = ToDoListItem(
+        id: newId,
+        title: title,
+        dueDate: dueDate.timeIntervalSince1970,
+        createdDate: Date().timeIntervalSince1970,
+        isDone: false
+    )*/
 
 class TaskStore : ObservableObject {
-    @Published var tasks = [Task]()
+    @Published var tasks = [ToDoListItem]()
+    @Published var title = ""
+    @Published var dueDate = Date()
+    @Published var showAlert = false
+    
+    init() {}
+    
+    func save(/*string title: newTitle, var newDueDate*/) {
+        guard canSave else {
+            return
+        }
+        
+        // tasks[tasks.count - 1].title =
+        // tasks[tasks.count - 1].dueDate = dueDate.timeIntervalSince1970;
+        
+        // Save model
+        
+    }
+    
+    var canSave: Bool {
+        guard !title.trimmingCharacters(in: .whitespaces).isEmpty else {
+            return false
+        }
+        
+        guard dueDate >= Date().addingTimeInterval(-86400) else {
+            return false
+        }
+        
+        return true
+    }
 }

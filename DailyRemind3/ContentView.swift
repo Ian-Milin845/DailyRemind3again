@@ -17,13 +17,12 @@ struct ContentView: View {
     @State var newToDo : String = ""
     @State var showingNewItemView = false
     
-    
     var searchBar : some View {
         HStack {
             TextField("Enter in a new task", text: self.$newToDo)
             Button {
                 // Action
-                // self.addNewToDo()
+                self.addNewToDo()
                 showingNewItemView = true
             } label: {
                 Image(systemName: "plus")
@@ -32,9 +31,15 @@ struct ContentView: View {
     }
     
     func addNewToDo() {
-        taskStore.tasks.append(Task(
-            id: String(taskStore.tasks.count + 1),
-            toDoItem: newToDo))
+        taskStore.tasks.append(
+            ToDoListItem(
+                id: String(taskStore.tasks.count + 1),
+                title: self.newToDo,
+                dueDate: Date().timeIntervalSince1970 + 60,
+                createdDate: Date().timeIntervalSince1970,
+                isDone: false
+            )
+        )
         self.newToDo = ""
         //Ad auto generated id in the future.
     }
@@ -44,7 +49,7 @@ struct ContentView: View {
                 searchBar.padding()
                 List {
                     ForEach(self.taskStore.tasks) { task in
-                        Text(task.toDoItem)
+                        Text(task.title)
                     }
                     .onMove(perform: self.move)
                     .onDelete(perform: self.delete)
