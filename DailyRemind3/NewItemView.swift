@@ -17,7 +17,7 @@ struct NewItemView: View {
     
     var body: some View {
         VStack {
-            Text("New Item")
+            Text("New Task")
                 .font(.system(size: 32))
                 .bold()
                 .padding()
@@ -34,10 +34,10 @@ struct NewItemView: View {
                 // Button
                 TLButton(
                     title: "Save",
-                    background: .pink
+                    background: .purple
                 ) {
                     if viewModel.canSave {
-                        viewModel.save(/*viewModel.title, viewModel.dueDate*/)
+                        viewModel.save()
                         newItemPresented = false
                     } else {
                         viewModel.showAlert = true

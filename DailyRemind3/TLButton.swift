@@ -35,7 +35,7 @@ struct TLButton: View {
 
 #Preview {
     TLButton(title: "Value",
-             background: .pink) {
+             background: .purple) {
         // Action
     }
 }

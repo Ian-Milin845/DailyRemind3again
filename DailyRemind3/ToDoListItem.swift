@@ -11,10 +11,10 @@
 
 import Foundation
 
-struct ToDoListItem: /*Codable,*/ Identifiable {
+struct ToDoListItem: Codable, Identifiable {
     let id: String
-    let title: String
-    let dueDate: TimeInterval
+    var title: String
+    var dueDate: TimeInterval
     let createdDate: TimeInterval
     var isDone: Bool
     

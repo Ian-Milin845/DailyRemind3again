@@ -24,20 +24,20 @@ let newItem = ToDoListItem(
 
 class TaskStore : ObservableObject {
     @Published var tasks = [ToDoListItem]()
+    
     @Published var title = ""
     @Published var dueDate = Date()
     @Published var showAlert = false
-    
+     
     init() {}
     
-    func save(/*string title: newTitle, var newDueDate*/) {
+    func save() {
         guard canSave else {
             return
         }
         
-        // tasks[tasks.count - 1].title =
-        // tasks[tasks.count - 1].dueDate = dueDate.timeIntervalSince1970;
-        
+        tasks[tasks.count].title = title
+        tasks[tasks.count - 1].dueDate = dueDate.timeIntervalSince1970
         // Save model
         
     }
