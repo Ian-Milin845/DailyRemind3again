@@ -37,7 +37,7 @@ class TaskStore : ObservableObject {
         }
         
         tasks[tasks.count].title = title
-        tasks[tasks.count - 1].dueDate = dueDate.timeIntervalSince1970
+        tasks[tasks.count - 1].dueDate = dueDate
         // Save model
         
     }

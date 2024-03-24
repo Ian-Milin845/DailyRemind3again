@@ -5,6 +5,7 @@
 //  Created by Ian Milin
 //
 
+import SwiftData
 import SwiftUI
 
 @main
@@ -13,5 +14,6 @@ struct DailyRemind3App: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: ToDoListItem.self)
     }
 }

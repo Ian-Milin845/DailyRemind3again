@@ -9,20 +9,24 @@
 //  Jayden Hixon
 //
 
+import SwiftData
 import SwiftUI
-import Combine
+// import Combine
 
 struct ContentView: View {
-    @ObservedObject var taskStore = TaskStore()
+    @Environment(\.modelContext) var modelContext
+    @Query var toDoListItems: [ToDoListItem]
+    @State private var path = [ToDoListItem]()
     @State var newToDo : String = ""
     @State var showingNewItemView = false
+    // var secToDoListItem: ToDoListItem?
     
     var searchBar : some View {
         HStack {
             TextField("Enter in a new task", text: self.$newToDo)
             Button {
                 // Action
-                self.addNewToDo()
+                addNewToDo()
                 showingNewItemView = true
             } label: {
                 Image(systemName: "plus")
@@ -31,46 +35,42 @@ struct ContentView: View {
     }
     
     func addNewToDo() {
-        taskStore.tasks.append(
-            ToDoListItem(
-                id: String(taskStore.tasks.count + 1),
-                title: self.newToDo,
-                dueDate: Date().timeIntervalSince1970 + 60,
-                createdDate: Date().timeIntervalSince1970,
-                isDone: false
-            )
-        )
+        //secToDoListItem = ToDoListItem(title: newToDo)
+        //let newToDoListItem = secToDoListItem!
+        let thisToDoListItem = ToDoListItem(title: "woah")
+        modelContext.insert(thisToDoListItem)
+        //path = [toDoListItem]
         self.newToDo = ""
         //Ad auto generated id in the future.
     }
+    
     var body: some View {
-        NavigationView {
-            VStack {
-                searchBar.padding()
-                List {
-                    ForEach(self.taskStore.tasks) { task in
-                        Text(task.title)
-                    }
-                    .onMove(perform: self.move)
-                    .onDelete(perform: self.delete)
+        NavigationStack(path: $path) {
+            searchBar.padding()
+            List {
+                ForEach(toDoListItems) { toDoListItem in
+                    Text(toDoListItem.title)
                 }
-                .navigationBarTitle("Tasks")
-                .navigationBarItems(trailing: EditButton())
+                .onDelete(perform: self.delete)
             }
+            .navigationBarTitle("Tasks")
+            .navigationBarItems(trailing: EditButton())
+            /*
             .sheet(isPresented: $showingNewItemView) {
-                NewItemView(newItemPresented: $showingNewItemView)
-            }
+                EditItemView(toDoListItem: secToDoListItem!, editItemPresented: $showingNewItemView)
+            }*/
         }
-    }
-    func move(from source : IndexSet, to destination : Int) {
-        taskStore.tasks.move(fromOffsets: source, toOffset: destination)
     }
     
     func delete(at offsets : IndexSet) {
-        taskStore.tasks.remove(atOffsets: offsets)
+        for index in offsets {
+            let toDoListItem = toDoListItems[index]
+            modelContext.delete(toDoListItem)
+        }
     }
 }
 
 #Preview {
     ContentView()
+        .modelContainer(for: ToDoListItem.self)
 }

@@ -13,7 +13,7 @@
 		C6E144282B9EAF100091322D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6E144272B9EAF100091322D /* Assets.xcassets */; };
 		C6E1442B2B9EAF100091322D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6E1442A2B9EAF100091322D /* Preview Assets.xcassets */; };
 		C6E144322B9EB2D30091322D /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6E144312B9EB2D30091322D /* DataStore.swift */; };
-		C6E144382B9F0B5F0091322D /* NewItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6E144372B9F0B5F0091322D /* NewItemView.swift */; };
+		C6E144382B9F0B5F0091322D /* EditItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6E144372B9F0B5F0091322D /* EditItemView.swift */; };
 		C6E1443A2B9F0C8E0091322D /* ToDoListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6E144392B9F0C8E0091322D /* ToDoListItem.swift */; };
 		C6E1443C2B9F2E3F0091322D /* NewItemViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6E1443B2B9F2E3F0091322D /* NewItemViewViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -26,7 +26,7 @@
 		C6E144272B9EAF100091322D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C6E1442A2B9EAF100091322D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C6E144312B9EB2D30091322D /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataStore.swift; path = DailyRemind3/DataStore.swift; sourceTree = SOURCE_ROOT; };
-		C6E144372B9F0B5F0091322D /* NewItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewItemView.swift; path = DailyRemind3/NewItemView.swift; sourceTree = SOURCE_ROOT; };
+		C6E144372B9F0B5F0091322D /* EditItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EditItemView.swift; path = DailyRemind3/EditItemView.swift; sourceTree = SOURCE_ROOT; };
 		C6E144392B9F0C8E0091322D /* ToDoListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ToDoListItem.swift; path = DailyRemind3/ToDoListItem.swift; sourceTree = SOURCE_ROOT; };
 		C6E1443B2B9F2E3F0091322D /* NewItemViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewItemViewViewModel.swift; path = DailyRemind3/NewItemViewViewModel.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -63,7 +63,7 @@
 			children = (
 				C6E144232B9EAF0E0091322D /* DailyRemind3App.swift */,
 				C6E144392B9F0C8E0091322D /* ToDoListItem.swift */,
-				C6E144372B9F0B5F0091322D /* NewItemView.swift */,
+				C6E144372B9F0B5F0091322D /* EditItemView.swift */,
 				C6A181952B9F39AD00F9EC9F /* TLButton.swift */,
 				C6E1443B2B9F2E3F0091322D /* NewItemViewViewModel.swift */,
 				C6E144252B9EAF0E0091322D /* ContentView.swift */,
@@ -152,7 +152,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C6E144382B9F0B5F0091322D /* NewItemView.swift in Sources */,
+				C6E144382B9F0B5F0091322D /* EditItemView.swift in Sources */,
 				C6A181962B9F39AD00F9EC9F /* TLButton.swift in Sources */,
 				C6E144262B9EAF0E0091322D /* ContentView.swift in Sources */,
 				C6E144322B9EB2D30091322D /* DataStore.swift in Sources */,
