@@ -14,9 +14,12 @@ import SwiftUI
 
 struct EditItemView: View {
     // @StateObject var viewModel = TaskStore()
+    @Environment(\.modelContext) var modelContext
     @Bindable var toDoListItem: ToDoListItem
-    @Binding var editItemPresented: Bool
+    @Binding var editingItemPresented: Bool
     @State var showAlert: Bool = false
+    //@Binding var newTitle: String
+    //@State private var newDueDate: Date = .now.addingTimeInterval(3600)
     
     var body: some View {
         VStack {
@@ -27,11 +30,11 @@ struct EditItemView: View {
             
             Form {
                 // Title
-                TextField("Title", text: $toDoListItem.title)
+                TextField("Title", text: /*$newTitle*/ $toDoListItem.title)
                     .textFieldStyle(DefaultTextFieldStyle())
                 
                 // Due Date
-                DatePicker("Due Date", selection: $toDoListItem.dueDate)
+                DatePicker("Due Date", selection: /*$newDueDate*/ $toDoListItem.dueDate)
                     .datePickerStyle(DefaultDatePickerStyle())
                 
                 // Button
@@ -40,7 +43,8 @@ struct EditItemView: View {
                     background: .purple
                 ) {
                     if canSave {
-                        editItemPresented = false
+                        // modelContext.insert(ToDoListItem(title: newTitle, dueDate: newDueDate))
+                        editingItemPresented = false
                     } else {
                         showAlert = true
                     }
@@ -71,15 +75,20 @@ struct EditItemView: View {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: ToDoListItem.self, configurations: config)
         let example = ToDoListItem(title: "Example ToDoListItem")
-        return EditItemView(
-            toDoListItem: example,
-            editItemPresented: Binding(
+        return EditItemView(toDoListItem: example,
+            editingItemPresented: Binding(
                 get: {
                     return true
                 },
                 set: { _ in
                     
-                }))
+                })/*, newTitle: Binding (
+                    get: {
+                        return "Example ToDoListItem"
+                    },
+                    set: { _ in
+                        
+                    })*/)
         .modelContainer(container)
     } catch {
         fatalError("Failed to create model container")

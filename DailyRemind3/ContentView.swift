@@ -16,10 +16,10 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
     @Query var toDoListItems: [ToDoListItem]
-    @State private var path = [ToDoListItem]()
+    //@State private var path = [ToDoListItem]()
     @State var newToDo : String = ""
-    @State var showingNewItemView = false
-    // var secToDoListItem: ToDoListItem?
+    @State var showingEditItemView = false
+    @State var editToDoListItem: ToDoListItem?
     
     var searchBar : some View {
         HStack {
@@ -27,39 +27,55 @@ struct ContentView: View {
             Button {
                 // Action
                 addNewToDo()
-                showingNewItemView = true
+                showingEditItemView = true
             } label: {
                 Image(systemName: "plus")
             }
         }
     }
     
-    func addNewToDo() {
-        //secToDoListItem = ToDoListItem(title: newToDo)
-        //let newToDoListItem = secToDoListItem!
-        let thisToDoListItem = ToDoListItem(title: "woah")
-        modelContext.insert(thisToDoListItem)
-        //path = [toDoListItem]
-        self.newToDo = ""
-        //Ad auto generated id in the future.
-    }
-    
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(/*path: $path*/) {
             searchBar.padding()
             List {
                 ForEach(toDoListItems) { toDoListItem in
-                    Text(toDoListItem.title)
+                    //NavigationLink(value: toDoListItem) {
+                    VStack(alignment: .leading) {
+                        Text(toDoListItem.title)
+                        
+                        Text(toDoListItem.dueDate.formatted(date: .numeric, time: .standard))
+                            .font(.caption)
+                            .foregroundColor(Color.gray)
+                        
+                    }
+                    .onTapGesture {
+                        editToDoListItem = toDoListItem
+                        showingEditItemView = true
+                    }
+                    //}
                 }
-                .onDelete(perform: self.delete)
+                .onDelete(perform: delete)
+                .onTapGesture {
+                    // editToDoListItem = toDoListItem
+                    print("Tapped cell")
+                }
             }
-            .navigationBarTitle("Tasks")
+            .navigationTitle("Tasks")
             .navigationBarItems(trailing: EditButton())
-            /*
-            .sheet(isPresented: $showingNewItemView) {
-                EditItemView(toDoListItem: secToDoListItem!, editItemPresented: $showingNewItemView)
-            }*/
+            //.navigationDestination(for: ToDoListItem.self, destination: EditItemView.init)
+            
+            .sheet(isPresented: $showingEditItemView) {
+                EditItemView(toDoListItem: editToDoListItem!, editingItemPresented: $showingEditItemView /*, newTitle: $newToDo*/)
+            }
         }
+    }
+    
+    func addNewToDo() {
+        editToDoListItem = ToDoListItem(title: newToDo)
+        modelContext.insert(editToDoListItem!)
+        // path = [thisToDoListItem]
+        self.newToDo = ""
+        //Ad auto generated id in the future.
     }
     
     func delete(at offsets : IndexSet) {

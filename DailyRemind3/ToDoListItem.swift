@@ -14,14 +14,14 @@ import Foundation
 
 @Model
 class ToDoListItem /*: Identifiable*/ {
-    let id: String
+    // var id: String
     var title: String
     var dueDate: Date
-    let createdDate: Date
+    var createdDate: Date
     var isDone: Bool
     
-    init(id: String = "", title: String = "", dueDate: Date = .now.addingTimeInterval(3600), createdDate: Date = .now, isDone: Bool = false) {
-        self.id = id
+    init(/*id: String = "", */title: String = "", dueDate: Date = .now.addingTimeInterval(3600), createdDate: Date = .now, isDone: Bool = false) {
+        //self.id = id
         self.title = title
         self.dueDate = dueDate
         self.createdDate = createdDate
@@ -30,5 +30,5 @@ class ToDoListItem /*: Identifiable*/ {
     
     func setDone(_ state: Bool) {
         isDone = state
-    }
+    } 
 }
