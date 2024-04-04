@@ -19,6 +19,7 @@ struct ContentView: View {
     //@State private var path = [ToDoListItem]()
     @State var newToDo : String = ""
     @State var showingEditItemView = false
+    @State var savedItem = true
     @State var editToDoListItem: ToDoListItem?
     
     var searchBar : some View {
@@ -28,6 +29,7 @@ struct ContentView: View {
                 // Action
                 addNewToDo()
                 showingEditItemView = true
+                savedItem = false
             } label: {
                 Image(systemName: "plus")
             }
@@ -66,7 +68,7 @@ struct ContentView: View {
             //.navigationDestination(for: ToDoListItem.self, destination: EditItemView.init)
             
             .sheet(isPresented: $showingEditItemView) {
-                EditItemView(toDoListItem: editToDoListItem!, editingItemPresented: $showingEditItemView /*, newTitle: $newToDo*/)
+                EditItemView(toDoListItem: editToDoListItem!, editingItemPresented: $showingEditItemView , newTitle: editToDoListItem!.title)
             }
         }
     }

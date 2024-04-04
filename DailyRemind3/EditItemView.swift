@@ -17,7 +17,7 @@ struct EditItemView: View {
     @Bindable var toDoListItem: ToDoListItem
     @Binding var editingItemPresented: Bool
     @State var showAlert: Bool = false
-    //@State var newTitle: String
+    @State var newTitle: String
     @State private var newDueDate: Date = .now.addingTimeInterval(3600)
     //toDoListItem.dueDate = newDueDate.timeIntervalSince1970
     
@@ -30,28 +30,30 @@ struct EditItemView: View {
             
             Form {
                 // Title
-                TextField("Title", text: /*$newTitle*/ $toDoListItem.title)
+                TextField("Title", text: $newTitle /*$toDoListItem.title*/)
                     .textFieldStyle(DefaultTextFieldStyle())
                 
                 // Due Date
                 DatePicker("Due Date", selection: $newDueDate /*$toDoListItem.dueDate*/)
                     .datePickerStyle(DefaultDatePickerStyle())
-                    .onChange(of: newDueDate) {
+                    /*.onChange(of: newDueDate) {
                         toDoListItem.dueDate = newDueDate.timeIntervalSince1970
-                    }
+                    }*/
                 
                 // Button
-                /*TLButton(
+                TLButton(
                     title: "Save",
                     background: .purple
                 ) {
                     if canSave {
                         // modelContext.insert(ToDoListItem(title: newTitle, dueDate: newDueDate))
+                        toDoListItem.title = newTitle
+                        toDoListItem.dueDate = newDueDate.timeIntervalSince1970
                         editingItemPresented = false
                     } else {
                         showAlert = true
                     }
-                }*/
+                }
             }
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Error"),
@@ -66,7 +68,7 @@ struct EditItemView: View {
         }
         
         //guard toDoListItem.dueDate.timeIntervalSince1970 >= Date().addingTimeInterval(-86400).timeIntervalSince1970 else {
-        guard toDoListItem.dueDate >= Date().addingTimeInterval(-86400).timeIntervalSince1970 else {
+        guard newDueDate.timeIntervalSince1970 >= Date().addingTimeInterval(-86400).timeIntervalSince1970 else {
             return false
         }
         
@@ -86,7 +88,7 @@ struct EditItemView: View {
                 },
                 set: { _ in
                     
-                })/*, newTitle: Binding (
+                }), newTitle: "Example ToDoListItem"/*, newTitle: Binding (
                     get: {
                         return "Example ToDoListItem"
                     },
