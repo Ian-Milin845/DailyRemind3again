@@ -13,13 +13,13 @@ import SwiftData
 import SwiftUI
 
 struct EditItemView: View {
-    // @StateObject var viewModel = TaskStore()
-    @Environment(\.modelContext) var modelContext
+    //@Environment(\.modelContext) var modelContext
     @Bindable var toDoListItem: ToDoListItem
     @Binding var editingItemPresented: Bool
     @State var showAlert: Bool = false
-    //@Binding var newTitle: String
-    //@State private var newDueDate: Date = .now.addingTimeInterval(3600)
+    //@State var newTitle: String
+    @State private var newDueDate: Date = .now.addingTimeInterval(3600)
+    //toDoListItem.dueDate = newDueDate.timeIntervalSince1970
     
     var body: some View {
         VStack {
@@ -34,11 +34,14 @@ struct EditItemView: View {
                     .textFieldStyle(DefaultTextFieldStyle())
                 
                 // Due Date
-                DatePicker("Due Date", selection: /*$newDueDate*/ $toDoListItem.dueDate)
+                DatePicker("Due Date", selection: $newDueDate /*$toDoListItem.dueDate*/)
                     .datePickerStyle(DefaultDatePickerStyle())
+                    .onChange(of: newDueDate) {
+                        toDoListItem.dueDate = newDueDate.timeIntervalSince1970
+                    }
                 
                 // Button
-                TLButton(
+                /*TLButton(
                     title: "Save",
                     background: .purple
                 ) {
@@ -48,7 +51,7 @@ struct EditItemView: View {
                     } else {
                         showAlert = true
                     }
-                }
+                }*/
             }
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Error"),
@@ -62,7 +65,8 @@ struct EditItemView: View {
             return false
         }
         
-        guard toDoListItem.dueDate >= Date().addingTimeInterval(-86400) else {
+        //guard toDoListItem.dueDate.timeIntervalSince1970 >= Date().addingTimeInterval(-86400).timeIntervalSince1970 else {
+        guard toDoListItem.dueDate >= Date().addingTimeInterval(-86400).timeIntervalSince1970 else {
             return false
         }
         
@@ -74,7 +78,7 @@ struct EditItemView: View {
     do {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: ToDoListItem.self, configurations: config)
-        let example = ToDoListItem(title: "Example ToDoListItem")
+        let example = ToDoListItem(title: "Example ToDoListItem"/*, createdDate: Date.now.timeIntervalSince1970*/)
         return EditItemView(toDoListItem: example,
             editingItemPresented: Binding(
                 get: {

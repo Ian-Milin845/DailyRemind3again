@@ -10,10 +10,19 @@ import SwiftUI
 
 @main
 struct DailyRemind3App: App {
+    /*let modelContainer: ModelContainer
+    init() {
+        do {
+            modelContainer = try ModelContainer(for: ToDoListItem.self)
+        } catch {
+            fatalError("Could not initialize ModelContainer")
+        }
+    }*/
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: ToDoListItem.self)
+        .modelContainer(/*modelContainer*/for: ToDoListItem.self)
     }
 }

@@ -43,7 +43,8 @@ struct ContentView: View {
                     VStack(alignment: .leading) {
                         Text(toDoListItem.title)
                         
-                        Text(toDoListItem.dueDate.formatted(date: .numeric, time: .standard))
+                        Text(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(date: .numeric, time: .standard))
+                        //Text(toDoListItem.dueDate.formatted(date: .numeric, time: .standard))
                             .font(.caption)
                             .foregroundColor(Color.gray)
                         
@@ -71,7 +72,7 @@ struct ContentView: View {
     }
     
     func addNewToDo() {
-        editToDoListItem = ToDoListItem(title: newToDo)
+        editToDoListItem = ToDoListItem(title: newToDo/*, createdDate: Date.now.timeIntervalSince1970*/)
         modelContext.insert(editToDoListItem!)
         // path = [thisToDoListItem]
         self.newToDo = ""
@@ -87,6 +88,15 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: ToDoListItem.self)
+    do {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: ToDoListItem.self, configurations: config)
+        return ContentView()
+            .modelContainer(container)
+    } catch {
+        fatalError("Failed to create model container")
+    }
+    
+    /*ContentView()
+        .modelContainer(for: ToDoListItem.self)*/
 }
