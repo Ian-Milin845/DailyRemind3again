@@ -23,6 +23,6 @@ struct DailyRemind3App: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(/*modelContainer*/for: ToDoListItem.self)
+        .modelContainer(for: ToDoListItem.self)
     }
 }

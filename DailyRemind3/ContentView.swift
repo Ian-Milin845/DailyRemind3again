@@ -11,11 +11,12 @@
 
 import SwiftData
 import SwiftUI
-// import Combine
+import Foundation
+//import Combine
 
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
-    @Query var toDoListItems: [ToDoListItem]
+    @Query(sort: \ToDoListItem.dueDate) var toDoListItems: [ToDoListItem]
     //@State private var path = [ToDoListItem]()
     @State var newToDo : String = ""
     @State var showingEditItemView = false
@@ -40,16 +41,34 @@ struct ContentView: View {
         NavigationStack(/*path: $path*/) {
             searchBar.padding()
             List {
+                /*Button {
+                 
+                 } label: {*/
                 ForEach(toDoListItems) { toDoListItem in
                     //NavigationLink(value: toDoListItem) {
-                    VStack(alignment: .leading) {
-                        Text(toDoListItem.title)
+                    HStack(){
+                        VStack(alignment: .leading) {
+                            Text(toDoListItem.title)
+                                
+                            
+                            Text(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(date: .numeric, time: .standard))
+                            //Text(toDoListItem.dueDate.formatted(date: .numeric, time: .standard))
+                                .font(.caption)
+                                .foregroundColor(Color(.secondaryLabel))
+                            
+                        }
                         
-                        Text(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(date: .numeric, time: .standard))
-                        //Text(toDoListItem.dueDate.formatted(date: .numeric, time: .standard))
-                            .font(.caption)
-                            .foregroundColor(Color.gray)
                         
+                        
+                        
+                        
+                        //Spacer()
+                        
+                        Button {
+                            toDoListItem.isDone = true
+                        } label: {
+                            Image(systemName: toDoListItem.isDone ? "checkmark.circle.fill" : "circle")
+                        }
                     }
                     .onTapGesture {
                         editToDoListItem = toDoListItem
@@ -58,10 +77,11 @@ struct ContentView: View {
                     //}
                 }
                 .onDelete(perform: delete)
-                .onTapGesture {
-                    // editToDoListItem = toDoListItem
-                    print("Tapped cell")
-                }
+                /*.onTapGesture {
+                 // editToDoListItem = toDoListItem
+                 print("Tapped cell")
+                 }*/
+                //}
             }
             .navigationTitle("Tasks")
             .navigationBarItems(trailing: EditButton())
@@ -69,7 +89,14 @@ struct ContentView: View {
             
             .sheet(isPresented: $showingEditItemView) {
                 EditItemView(toDoListItem: editToDoListItem!, editingItemPresented: $showingEditItemView , newTitle: editToDoListItem!.title)
+                    .onDisappear {
+                        if !canRemain {
+                            // modelContext.insert(ToDoListItem(title: newTitle, dueDate: newDueDate))
+                            modelContext.delete(editToDoListItem!)
+                        }
+                    }
             }
+            
         }
     }
     
@@ -87,18 +114,40 @@ struct ContentView: View {
             modelContext.delete(toDoListItem)
         }
     }
+    
+    var canRemain: Bool {
+        guard !editToDoListItem!.title.trimmingCharacters(in: .whitespaces).isEmpty else {
+            return false
+        }
+        
+        guard editToDoListItem!.dueDate >= Date().addingTimeInterval(-86400).timeIntervalSince1970 else {
+            return false
+        }
+        
+        return true
+    }
 }
 
 #Preview {
     do {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: ToDoListItem.self, configurations: config)
+        
+        var count = 1
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            let reminder = ToDoListItem(title: "Reminder \(count)", dueDate: (Date().timeIntervalSince1970 + 31536000))
+            container.mainContext.insert(reminder)
+            count = count + 1
+            if (count == 20) {
+                timer.invalidate()
+            }
+        }
         return ContentView()
             .modelContainer(container)
     } catch {
         fatalError("Failed to create model container")
     }
     
-    /*ContentView()
-        .modelContainer(for: ToDoListItem.self)*/
+    //ContentView()
+    //.modelContainer(for: ToDoListItem.self/*modelContainer*/)
 }

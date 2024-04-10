@@ -63,7 +63,7 @@ struct EditItemView: View {
     }
     
     var canSave: Bool {
-        guard !toDoListItem.title.trimmingCharacters(in: .whitespaces).isEmpty else {
+        guard /*!toDoListItem.title*/!newTitle.trimmingCharacters(in: .whitespaces).isEmpty else {
             return false
         }
         
