@@ -12,25 +12,27 @@
 import SwiftData
 import SwiftUI
 import Foundation
-//import Combine
+
+/*class AppConfig: ObservableObject {
+    @Published var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+}*/
 
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
     @Query(sort: \ToDoListItem.dueDate) var toDoListItems: [ToDoListItem]
-    //@State private var path = [ToDoListItem]()
+    //@EnvironmentObject var appConfig : AppConfig
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     @State var newToDo : String = ""
     @State var showingEditItemView = false
-    @State var savedItem = true
     @State var editToDoListItem: ToDoListItem?
     
     var searchBar : some View {
         HStack {
             TextField("Enter in a new task", text: self.$newToDo)
             Button {
-                // Action
                 addNewToDo()
                 showingEditItemView = true
-                savedItem = false
             } label: {
                 Image(systemName: "plus")
             }
@@ -38,60 +40,63 @@ struct ContentView: View {
     }
     
     var body: some View {
-        NavigationStack(/*path: $path*/) {
+        NavigationStack() {
             searchBar.padding()
             List {
-                /*Button {
-                 
-                 } label: {*/
                 ForEach(toDoListItems) { toDoListItem in
-                    //NavigationLink(value: toDoListItem) {
-                    HStack(){
-                        VStack(alignment: .leading) {
-                            Text(toDoListItem.title)
-                                
-                            
-                            Text(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(date: .numeric, time: .standard))
-                            //Text(toDoListItem.dueDate.formatted(date: .numeric, time: .standard))
-                                .font(.caption)
-                                .foregroundColor(Color(.secondaryLabel))
-                            
-                        }
-                        
-                        
-                        
-                        
-                        
-                        //Spacer()
+                    //@State var statusUpdate : String!
+                    
+                    HStack {
                         
                         Button {
-                            toDoListItem.isDone = true
+                            editToDoListItem = toDoListItem
+                            showingEditItemView = true
                         } label: {
-                            Image(systemName: toDoListItem.isDone ? "checkmark.circle.fill" : "circle")
+                            VStack(alignment: .leading) {
+                                Text(toDoListItem.title)
+                                Text("Due \(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(date: .numeric, time: .standard))")
+                                    .font(.caption)
+                                    .foregroundColor(Color(.secondaryLabel))
+                            }
                         }
+                        .buttonStyle(.plain)
+                        Spacer()
+                        VStack {
+                            Button {
+                                toDoListItem.isDone = !toDoListItem.isDone
+                                if !toDoListItem.isDone && toDoListItem.dueDate <= Date().timeIntervalSince1970 {
+                                    toDoListItem.statusUpdate = "Past Due"
+                                } else if toDoListItem.isDone {
+                                    toDoListItem.statusUpdate = "done"
+                                } else {
+                                    toDoListItem.statusUpdate = ""
+                                }
+                            } label: {
+                                Image(systemName: toDoListItem.isDone ? "checkmark.square.fill" : "square")
+                            }
+                            
+                            Text(toDoListItem.statusUpdate)
+                                .onReceive(timer) {_ in
+                                    if !toDoListItem.isDone && toDoListItem.dueDate <= Date().timeIntervalSince1970 {
+                                        toDoListItem.statusUpdate = "Past Due"
+                                    } else if toDoListItem.isDone {
+                                        toDoListItem.statusUpdate = "done"
+                                    } else {
+                                        toDoListItem.statusUpdate = ""
+                                    }
+                                }
+                        }
+                        
                     }
-                    .onTapGesture {
-                        editToDoListItem = toDoListItem
-                        showingEditItemView = true
-                    }
-                    //}
                 }
                 .onDelete(perform: delete)
-                /*.onTapGesture {
-                 // editToDoListItem = toDoListItem
-                 print("Tapped cell")
-                 }*/
-                //}
             }
-            .navigationTitle("Tasks")
+            .navigationTitle("Reminders")
             .navigationBarItems(trailing: EditButton())
-            //.navigationDestination(for: ToDoListItem.self, destination: EditItemView.init)
-            
             .sheet(isPresented: $showingEditItemView) {
                 EditItemView(toDoListItem: editToDoListItem!, editingItemPresented: $showingEditItemView , newTitle: editToDoListItem!.title)
                     .onDisappear {
                         if !canRemain {
-                            // modelContext.insert(ToDoListItem(title: newTitle, dueDate: newDueDate))
                             modelContext.delete(editToDoListItem!)
                         }
                     }
@@ -101,9 +106,8 @@ struct ContentView: View {
     }
     
     func addNewToDo() {
-        editToDoListItem = ToDoListItem(title: newToDo/*, createdDate: Date.now.timeIntervalSince1970*/)
+        editToDoListItem = ToDoListItem(title: newToDo)
         modelContext.insert(editToDoListItem!)
-        // path = [thisToDoListItem]
         self.newToDo = ""
         //Ad auto generated id in the future.
     }
@@ -119,17 +123,16 @@ struct ContentView: View {
         guard !editToDoListItem!.title.trimmingCharacters(in: .whitespaces).isEmpty else {
             return false
         }
-        
         guard editToDoListItem!.dueDate >= Date().addingTimeInterval(-86400).timeIntervalSince1970 else {
             return false
         }
-        
         return true
     }
 }
 
 #Preview {
     do {
+        //@EnvironmentObject var appConfig : AppConfig
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: ToDoListItem.self, configurations: config)
         
@@ -144,10 +147,8 @@ struct ContentView: View {
         }
         return ContentView()
             .modelContainer(container)
+            //.environmentObject(AppConfig())
     } catch {
         fatalError("Failed to create model container")
     }
-    
-    //ContentView()
-    //.modelContainer(for: ToDoListItem.self/*modelContainer*/)
 }

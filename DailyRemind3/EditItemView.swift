@@ -11,6 +11,7 @@
 
 import SwiftData
 import SwiftUI
+import UserNotifications
 
 struct EditItemView: View {
     //@Environment(\.modelContext) var modelContext
@@ -49,6 +50,32 @@ struct EditItemView: View {
                         // modelContext.insert(ToDoListItem(title: newTitle, dueDate: newDueDate))
                         toDoListItem.title = newTitle
                         toDoListItem.dueDate = newDueDate.timeIntervalSince1970
+                        
+                        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { success, error in
+                            if success {
+                                // schedule test
+                                print("All set!")
+                            }
+                            else if let error = error {
+                                print(error.localizedDescription)
+                            }
+                        })
+                        
+                        let content = UNMutableNotificationContent()
+                        content.title = toDoListItem.title
+                        content.sound = .default
+                        //content.body = body
+
+                        let targetDate = Date(timeIntervalSince1970: toDoListItem.dueDate)
+                        let trigger = UNCalendarNotificationTrigger(dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: targetDate), repeats: false)
+
+                        let request = UNNotificationRequest(identifier: "some_long_id", content: content, trigger: trigger)
+                        UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
+                            if error != nil {
+                                print("something went wrong")
+                            }
+                        })
+                        
                         editingItemPresented = false
                     } else {
                         showAlert = true

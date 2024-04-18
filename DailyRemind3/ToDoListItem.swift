@@ -19,6 +19,7 @@ class ToDoListItem /*: Identifiable*/ {
     var dueDate: TimeInterval //let createdDate: Date //
     var createdDate: TimeInterval
     var isDone: Bool
+    var statusUpdate: String = ""
     
     init(//id: String = "",
         title: String = "", //dueDate: Date = Date.now.addingTimeInterval(3600), //
@@ -30,9 +31,15 @@ class ToDoListItem /*: Identifiable*/ {
         self.dueDate = dueDate
         self.createdDate = createdDate
         self.isDone = isDone
+        
+        /*if /*self.dueDate <= Date().timeIntervalSince1970 &&*/ self.isDone {
+            self.status = "Past Due"
+        } else {
+            self.status = "Not past Due"
+        }*/
     }
     
-    func setDone(_ state: Bool) {
+    /*func setDone(_ state: Bool) {
         isDone = state
-    }
+    }*/
 }
