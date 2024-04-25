@@ -61,7 +61,7 @@ struct ContentView: View {
                         }
                         .buttonStyle(.plain)
                         Spacer()
-                        VStack {
+                        VStack(alignment: .trailing) {
                             Button {
                                 toDoListItem.isDone = !toDoListItem.isDone
                                 if !toDoListItem.isDone && toDoListItem.dueDate <= Date().timeIntervalSince1970 {
@@ -69,13 +69,14 @@ struct ContentView: View {
                                 } else if toDoListItem.isDone {
                                     toDoListItem.statusUpdate = "done"
                                 } else {
-                                    toDoListItem.statusUpdate = ""
+                                    toDoListItem.statusUpdate = " "
                                 }
                             } label: {
                                 Image(systemName: toDoListItem.isDone ? "checkmark.square.fill" : "square")
                             }
                             
                             Text(toDoListItem.statusUpdate)
+                                .frame(height: 20.0)
                                 .onReceive(timer) {_ in
                                     if !toDoListItem.isDone && toDoListItem.dueDate <= Date().timeIntervalSince1970 {
                                         toDoListItem.statusUpdate = "Past Due"
