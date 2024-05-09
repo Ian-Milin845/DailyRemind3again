@@ -14,14 +14,13 @@ import SwiftUI
 import UserNotifications
 
 struct EditItemView: View {
-    //@Environment(\.modelContext) var modelContext
     @Bindable var toDoListItem: ToDoListItem
     @Binding var editingItemPresented: Bool
+    @State var selectedCategory: IntervalCategory = .daily
     @State var showAlert: Bool = false
     @State var newTitle: String
     @State private var newDueDate: Date = .now.addingTimeInterval(3600)
-    //toDoListItem.dueDate = newDueDate.timeIntervalSince1970
-    
+
     var body: some View {
         VStack {
             Text("Edit Task")
@@ -31,15 +30,22 @@ struct EditItemView: View {
             
             Form {
                 // Title
-                TextField("Title", text: $newTitle /*$toDoListItem.title*/)
+                TextField("Title", text: $newTitle)
                     .textFieldStyle(DefaultTextFieldStyle())
                 
                 // Due Date
-                DatePicker("Due Date", selection: $newDueDate /*$toDoListItem.dueDate*/)
+                DatePicker("Date Components", selection: $newDueDate /*$toDoListItem.dueDate*/)
                     .datePickerStyle(DefaultDatePickerStyle())
-                    /*.onChange(of: newDueDate) {
-                        toDoListItem.dueDate = newDueDate.timeIntervalSince1970
-                    }*/
+                
+                Toggle("Repeat", isOn: $toDoListItem.repeating)
+                        if toDoListItem.repeating {
+                            Picker("Interval", selection: $selectedCategory) {
+                                ForEach(IntervalCategory.allCases) { category in
+                                    Text(category.rawValue)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                        }
                 
                 // Button
                 TLButton(
@@ -47,29 +53,82 @@ struct EditItemView: View {
                     background: .purple
                 ) {
                     if canSave {
-                        // modelContext.insert(ToDoListItem(title: newTitle, dueDate: newDueDate))
+                        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [toDoListItem.title, "\(newTitle)2"])
                         toDoListItem.title = newTitle
                         toDoListItem.dueDate = newDueDate.timeIntervalSince1970
-                        
-                        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { success, error in
-                            if success {
-                                // schedule test
-                                print("All set!")
-                            }
-                            else if let error = error {
-                                print(error.localizedDescription)
-                            }
-                        })
                         
                         let content = UNMutableNotificationContent()
                         content.title = toDoListItem.title
                         content.sound = .default
-                        //content.body = body
 
                         let targetDate = Date(timeIntervalSince1970: toDoListItem.dueDate)
-                        let trigger = UNCalendarNotificationTrigger(dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: targetDate), repeats: false)
+                        
+                        var trigger = UNCalendarNotificationTrigger(
+                            dateMatching: Calendar.current.dateComponents(
+                                [.year, .month, .day, .hour, .minute, .second],
+                                from: targetDate),
+                            repeats: toDoListItem.repeating)
+                        
+                        var request: UNNotificationRequest
+                        
+                        if toDoListItem.repeating {
+                            toDoListItem.interval = selectedCategory.rawValue
+                            toDoListItem.presentInterval = "\(toDoListItem.interval), "
+                            switch selectedCategory {
+                            case.minutely:
+                                trigger = UNCalendarNotificationTrigger(
+                                    dateMatching: Calendar.current.dateComponents(
+                                        [.second],
+                                        from: targetDate),
+                                    repeats: true)
+                                break
+                            case .daily:
+                                request = UNNotificationRequest(identifier: "\(newTitle)2", content: content, trigger: trigger)
+                                UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
+                                    if error != nil {
+                                        print("something went wrong")
+                                    }
+                                })
+                                trigger = UNCalendarNotificationTrigger(
+                                    dateMatching: Calendar.current.dateComponents(
+                                        [.hour, .minute, .second],
+                                        from: targetDate),
+                                    repeats: true)
+                                break
+                            case .weekly:
+                                request = UNNotificationRequest(identifier: "\(newTitle)2", content: content, trigger: trigger)
+                                UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
+                                    if error != nil {
+                                        print("something went wrong")
+                                    }
+                                })
+                                trigger = UNCalendarNotificationTrigger(
+                                    dateMatching: Calendar.current.dateComponents(
+                                        [.weekday, .hour, .minute, .second],
+                                        from: targetDate),
+                                    repeats: true)
+                                break
+                            case .monthly:
+                                request = UNNotificationRequest(identifier: "\(newTitle)2", content: content, trigger: trigger)
+                                UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
+                                    if error != nil {
+                                        print("something went wrong")
+                                    }
+                                })
+                                trigger = UNCalendarNotificationTrigger(
+                                    dateMatching: Calendar.current.dateComponents(
+                                        [.month, .weekday, .hour, .minute, .second],
+                                        from: targetDate),
+                                    repeats: true)
+                                break
+                            }
+                        } else {
+                            toDoListItem.interval = "Daily"
+                            toDoListItem.presentInterval = ""
+                        }
 
-                        let request = UNNotificationRequest(identifier: "some_long_id", content: content, trigger: trigger)
+                        request = UNNotificationRequest(identifier: newTitle, content: content, trigger: trigger)
+                        
                         UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
                             if error != nil {
                                 print("something went wrong")
@@ -94,20 +153,20 @@ struct EditItemView: View {
             return false
         }
         
-        //guard toDoListItem.dueDate.timeIntervalSince1970 >= Date().addingTimeInterval(-86400).timeIntervalSince1970 else {
         guard newDueDate.timeIntervalSince1970 >= Date().addingTimeInterval(-86400).timeIntervalSince1970 else {
             return false
         }
         
         return true
     }
+     
 }
 
 #Preview {
     do {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: ToDoListItem.self, configurations: config)
-        let example = ToDoListItem(title: "Example ToDoListItem"/*, createdDate: Date.now.timeIntervalSince1970*/)
+        let example = ToDoListItem(title: "Example ToDoListItem")
         return EditItemView(toDoListItem: example,
             editingItemPresented: Binding(
                 get: {
@@ -115,13 +174,7 @@ struct EditItemView: View {
                 },
                 set: { _ in
                     
-                }), newTitle: "Example ToDoListItem"/*, newTitle: Binding (
-                    get: {
-                        return "Example ToDoListItem"
-                    },
-                    set: { _ in
-                        
-                    })*/)
+                }), newTitle: "Example ToDoListItem")
         .modelContainer(container)
     } catch {
         fatalError("Failed to create model container")

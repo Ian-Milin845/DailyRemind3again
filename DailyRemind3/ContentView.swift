@@ -13,14 +13,9 @@ import SwiftData
 import SwiftUI
 import Foundation
 
-/*class AppConfig: ObservableObject {
-    @Published var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-}*/
-
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
     @Query(sort: \ToDoListItem.dueDate) var toDoListItems: [ToDoListItem]
-    //@EnvironmentObject var appConfig : AppConfig
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @State var newToDo : String = ""
@@ -44,8 +39,6 @@ struct ContentView: View {
             searchBar.padding()
             List {
                 ForEach(toDoListItems) { toDoListItem in
-                    //@State var statusUpdate : String!
-                    
                     HStack {
                         
                         Button {
@@ -54,7 +47,7 @@ struct ContentView: View {
                         } label: {
                             VStack(alignment: .leading) {
                                 Text(toDoListItem.title)
-                                Text("Due \(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(date: .numeric, time: .standard))")
+                                Text("\(toDoListItem.presentInterval)\(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(Date.FormatStyle().weekday(.short))), \(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(date: .numeric , time: .standard))")
                                     .font(.caption)
                                     .foregroundColor(Color(.secondaryLabel))
                             }
@@ -95,7 +88,7 @@ struct ContentView: View {
             .navigationTitle("Reminders")
             .navigationBarItems(trailing: EditButton())
             .sheet(isPresented: $showingEditItemView) {
-                EditItemView(toDoListItem: editToDoListItem!, editingItemPresented: $showingEditItemView , newTitle: editToDoListItem!.title)
+                EditItemView(toDoListItem: editToDoListItem!, editingItemPresented: $showingEditItemView, selectedCategory: IntervalCategory(rawValue: editToDoListItem!.interval)!, newTitle: editToDoListItem!.title)
                     .onDisappear {
                         if !canRemain {
                             modelContext.delete(editToDoListItem!)
@@ -116,6 +109,7 @@ struct ContentView: View {
     func delete(at offsets : IndexSet) {
         for index in offsets {
             let toDoListItem = toDoListItems[index]
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [toDoListItem.title, "\(toDoListItem.title)2"])
             modelContext.delete(toDoListItem)
         }
     }
@@ -133,7 +127,6 @@ struct ContentView: View {
 
 #Preview {
     do {
-        //@EnvironmentObject var appConfig : AppConfig
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: ToDoListItem.self, configurations: config)
         
@@ -148,7 +141,6 @@ struct ContentView: View {
         }
         return ContentView()
             .modelContainer(container)
-            //.environmentObject(AppConfig())
     } catch {
         fatalError("Failed to create model container")
     }
