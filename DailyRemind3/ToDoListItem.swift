@@ -12,7 +12,6 @@
 import SwiftData
 import Foundation
 import SwiftUI
-
 enum IntervalCategory: String, CaseIterable, Identifiable {
     case minutely = "Minutely"
     case daily = "Daily"
@@ -20,7 +19,6 @@ enum IntervalCategory: String, CaseIterable, Identifiable {
     case monthly = "Monthly"
     var id: IntervalCategory { self }
 }
-
 @Model
 class ToDoListItem{
     var title: String
@@ -31,7 +29,6 @@ class ToDoListItem{
     var interval: String = "Daily"
     var presentInterval: String = ""
     var statusUpdate: String = ""
-    
     init(
         title: String = "",
         dueDate: TimeInterval = Date.now.addingTimeInterval(3600).timeIntervalSince1970,
@@ -42,8 +39,5 @@ class ToDoListItem{
         self.dueDate = dueDate
         self.createdDate = createdDate
         self.isDone = isDone
-        
-        
     }
-    
 }

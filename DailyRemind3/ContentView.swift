@@ -12,16 +12,13 @@
 import SwiftData
 import SwiftUI
 import Foundation
-
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
     @Query(sort: \ToDoListItem.dueDate) var toDoListItems: [ToDoListItem]
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
     @State var newToDo : String = ""
     @State var showingEditItemView = false
     @State var editToDoListItem: ToDoListItem?
-    
     var searchBar : some View {
         HStack {
             TextField("Enter in a new task", text: self.$newToDo)
@@ -33,23 +30,23 @@ struct ContentView: View {
             }
         }
     }
-    
     var body: some View {
         NavigationStack() {
             searchBar.padding()
             List {
                 ForEach(toDoListItems) { toDoListItem in
                     HStack {
-                        
                         Button {
                             editToDoListItem = toDoListItem
                             showingEditItemView = true
                         } label: {
                             VStack(alignment: .leading) {
                                 Text(toDoListItem.title)
-                                Text("\(toDoListItem.presentInterval)\(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(Date.FormatStyle().weekday(.short))), \(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(date: .numeric , time: .standard))")
-                                    .font(.caption)
-                                    .foregroundColor(Color(.secondaryLabel))
+                                Text(
+                                    "\(toDoListItem.presentInterval)\(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(Date.FormatStyle().weekday(.short))), \(Date(timeIntervalSince1970: toDoListItem.dueDate).formatted(date: .numeric , time: .standard))"
+                                )
+                                .font(.caption)
+                                .foregroundColor(Color(.secondaryLabel))
                             }
                         }
                         .buttonStyle(.plain)
@@ -88,32 +85,36 @@ struct ContentView: View {
             .navigationTitle("Reminders")
             .navigationBarItems(trailing: EditButton())
             .sheet(isPresented: $showingEditItemView) {
-                EditItemView(toDoListItem: editToDoListItem!, editingItemPresented: $showingEditItemView, selectedCategory: IntervalCategory(rawValue: editToDoListItem!.interval)!, newTitle: editToDoListItem!.title)
-                    .onDisappear {
-                        if !canRemain {
-                            modelContext.delete(editToDoListItem!)
-                        }
+                EditItemView(
+                    toDoListItem: editToDoListItem!,
+                    editingItemPresented: $showingEditItemView,
+                    selectedCategory: IntervalCategory(rawValue: editToDoListItem!.interval)!,
+                    newTitle: editToDoListItem!.title
+                )
+                .onDisappear {
+                    if !canRemain {
+                        modelContext.delete(editToDoListItem!)
                     }
+                }
             }
             
         }
     }
-    
     func addNewToDo() {
         editToDoListItem = ToDoListItem(title: newToDo)
         modelContext.insert(editToDoListItem!)
         self.newToDo = ""
         //Ad auto generated id in the future.
     }
-    
     func delete(at offsets : IndexSet) {
         for index in offsets {
             let toDoListItem = toDoListItems[index]
-            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [toDoListItem.title, "\(toDoListItem.title)2"])
+            UNUserNotificationCenter.current().removePendingNotificationRequests(
+                withIdentifiers: [toDoListItem.title, "\(toDoListItem.title)2"]
+            )
             modelContext.delete(toDoListItem)
         }
     }
-    
     var canRemain: Bool {
         guard !editToDoListItem!.title.trimmingCharacters(in: .whitespaces).isEmpty else {
             return false
@@ -124,15 +125,16 @@ struct ContentView: View {
         return true
     }
 }
-
 #Preview {
     do {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: ToDoListItem.self, configurations: config)
-        
         var count = 1
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            let reminder = ToDoListItem(title: "Reminder \(count)", dueDate: (Date().timeIntervalSince1970 + 31536000))
+            let reminder = ToDoListItem(
+                title: "Reminder \(count)",
+                dueDate: (Date().timeIntervalSince1970 + 31536000)
+            )
             container.mainContext.insert(reminder)
             count = count + 1
             if (count == 20) {
